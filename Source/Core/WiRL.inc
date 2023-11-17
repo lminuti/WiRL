@@ -2,7 +2,7 @@
 {                                                                              }
 {       WiRL: RESTful Library for Delphi                                       }
 {                                                                              }
-{       Copyright (c) 2015-2021 WiRL Team                                      }
+{       Copyright (c) 2015-2023 WiRL Team                                      }
 {                                                                              }
 {       https://github.com/delphi-blocks/WiRL                                  }
 {                                                                              }
@@ -43,3 +43,5 @@
   {$DEFINE HAS_NEW_ANDROID_PID}
 {$ENDIF}
 
+{$IF CompilerVersion >= 36} // Delphi 12.0 Athens
+{$ENDIF}

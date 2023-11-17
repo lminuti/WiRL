@@ -19,6 +19,7 @@ uses
 {$R *.res}
 
 begin
+  ReportMemoryLeaksOnShutdown := True;
   Application.Initialize;
   Application.CreateForm(TMainDataModule, MainDataModule);
   Application.CreateForm(TMainForm, MainForm);

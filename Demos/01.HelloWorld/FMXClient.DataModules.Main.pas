@@ -9,6 +9,8 @@
 {******************************************************************************}
 unit FMXClient.DataModules.Main;
 
+{.$I '..\Core\WiRL.inc'}
+
 interface
 
 uses
@@ -44,6 +46,8 @@ type
     function ReverseString(AString: string): string;
     function GetPerson(Id: Integer): TPerson;
     function PostOrder(AOrderProposal: TOrderProposal): TOrder;
+    function TestException(): string;
+    function GetImageStreamResource: TStream;
   end;
 
 var
@@ -97,6 +101,15 @@ begin
   Result := HelloWorldResource.GET<string>;
 end;
 
+function TMainDataModule.GetImageStreamResource: TStream;
+begin
+  Result := WiRLClientApplication1
+    .Resource('entity/image')
+    .Accept('image/png')
+    //.SetContentStream(TMemoryStream.Create, False)
+    .Get<TStream>;
+end;
+
 function TMainDataModule.GetPerson(Id: Integer): TPerson;
 begin
   Result := WiRLClientApplication1
@@ -122,6 +135,21 @@ function TMainDataModule.ReverseString(AString: string): string;
 begin
   ReverseStringResource.PathParam('AString', AString);
   Result := ReverseStringResource.GET<string>;
+end;
+
+function TMainDataModule.TestException: string;
+begin
+  try
+    Result := WiRLClientApplication1
+      .Resource('helloworld/exception')
+      .Accept('application/json')
+      .Get<string>();
+  except
+    on E: EWiRLClientProtocolException do
+    begin
+      Result := E.Response.Content;
+    end;
+  end;
 end;
 
 procedure TMainDataModule.WiRLClient1BeforeCommand(ASender: TObject; ARequest:

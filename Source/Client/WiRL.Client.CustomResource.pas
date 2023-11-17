@@ -48,6 +48,7 @@ type
     FAfterRequest: TAfterRequestEvent;
     FOnRequestError: TRequestErrorEvent;
     FFilters: TStringDynArray;
+    FResponseStream: TStream;
     procedure SetPathParams(const Value: TStrings);
     procedure SetQueryParams(const Value: TStrings);
 
@@ -96,6 +97,8 @@ type
     // Handles the parent/child relationship for the designer
     function GetParentComponent: TComponent; override;
     function HasParent: Boolean; override;
+
+    procedure SetContentStream(AStream: TStream; AOwnStream: Boolean);
 
     // http verbs
     function Get<T>: T; overload;
@@ -221,6 +224,7 @@ begin
   FQueryParams := TStringList.Create;
   FContext := TWiRLContextHttp.Create;
   FHeaders := TWiRLResourceHeaders.Create(Self);
+  FResponseStream := TMemoryStream.Create;
 end;
 
 function TWiRLClientCustomResource.GetClient: TWiRLClient;
@@ -319,14 +323,7 @@ begin
   if not Assigned(LHttpMethodImplementation) then
     raise EWiRLClientException.CreateFmt('Implementation not found for method [%s]', [AHttpMethod]);
 
-  try
-    Result := LHttpMethodImplementation(Self, ARequestStream, AResponseStream, MergeHeaders(AHttpMethod));
-  except
-    on E: EWiRLClientProtocolException do
-    begin
-      raise EWiRLClientResourceException.Create(E.Response);
-    end;
-  end;
+  Result := LHttpMethodImplementation(Self, ARequestStream, AResponseStream, MergeHeaders(AHttpMethod));
 end;
 
 procedure TWiRLClientCustomResource.LoadHeadersProperty(Reader: TReader);
@@ -523,7 +520,7 @@ end;
 function TWiRLClientCustomResource.GenericHttpRequest<T, V>(
   const AHttpMethod: string; const ARequestEntity: T): V;
 var
-  LRequestStream, LResponseStream: TMemoryStream;
+  LRequestStream: TMemoryStream;
   LResponse: IWiRLResponse;
 begin
   if not Assigned(Client) then
@@ -535,36 +532,29 @@ begin
 
   LRequestStream := TMemoryStream.Create;
   try
-    LResponseStream := TGCMemoryStream.Create;
+    ObjectToStream<T>(MergeHeaders(AHttpMethod), ARequestEntity, LRequestStream);
+
+    DoBeforeRequest(AHttpMethod, LRequestStream, LResponse);
     try
-      ObjectToStream<T>(MergeHeaders(AHttpMethod), ARequestEntity, LRequestStream);
-
-      DoBeforeRequest(AHttpMethod, LRequestStream, LResponse);
-      try
-        if Assigned(LResponse) then
-        begin
-          if LResponse.StatusCode >= 400 then
-            raise EWiRLClientProtocolException.Create(LResponse);
-        end
-        else
-          LResponse := InternalHttpRequest(AHttpMethod, LRequestStream, LResponseStream);
-      except
-        on E: EWiRLClientProtocolException do
-        begin
-          DoRequestError(AHttpMethod, LRequestStream, E.Response);
-          raise;
-        end;
-      end;
-      DoAfterRequest(AHttpMethod, LRequestStream, LResponse);
-
-      if Assigned(LResponse.ContentStream) then
-        Result := StreamToObject<V>(LResponse.Headers, LResponse.ContentStream)
+      if Assigned(LResponse) then
+      begin
+        if LResponse.StatusCode >= 400 then
+          raise EWiRLClientProtocolException.Create(LResponse);
+      end
       else
-        Result := StreamToObject<V>(LResponse.Headers, LResponseStream);
-    finally
-      if not SameObject<V>(Result, LResponseStream) then
-        LResponseStream.Free;
+      begin
+        LResponse := InternalHttpRequest(AHttpMethod, LRequestStream, FResponseStream);
+      end;
+    except
+      on E: EWiRLClientProtocolException do
+      begin
+        DoRequestError(AHttpMethod, LRequestStream, E.Response);
+        raise;
+      end;
     end;
+    DoAfterRequest(AHttpMethod, LRequestStream, LResponse);
+
+    Result := StreamToObject<V>(LResponse.Headers, LResponse.ContentStream);
   finally
     LRequestStream.Free;
   end;
@@ -816,6 +806,20 @@ begin
     if Assigned(FApplication) and (FApplication.Resources.IndexOf(Self) < 0) then
       FApplication.Resources.Add(Self);
   end;
+end;
+
+procedure TWiRLClientCustomResource.SetContentStream(AStream: TStream;
+  AOwnStream: Boolean);
+begin
+  if Assigned(FResponseStream) then
+  begin
+    FResponseStream.Free;
+  end;
+
+  if AOwnStream then
+    FResponseStream := AStream
+  else
+    FResponseStream := THttpStream.Create(AStream, AOwnStream);
 end;
 
 procedure TWiRLClientCustomResource.SetFilters(const AFilters: TStringDynArray);

@@ -376,7 +376,7 @@ begin
   if AContentStream is TGCMemoryStream then
     Result := AContentStream
   else
-   Result := TWiRLStreamWrapper.Create(AContentStream);
+    Result := TWiRLStreamWrapper.Create(AContentStream);
 end;
 
 procedure TWiRLStreamProvider.ReadFrom(AObject: TObject; AType: TRttiType;

@@ -133,6 +133,7 @@ type
     FStatusCode: Integer;
     FStatusText: string;
     FContentStream: TStream;
+    FOwnStream: Boolean;
   protected
     function GetHeaderValue(const AName: string): string;
     function GetStatusCode: Integer;
@@ -145,6 +146,7 @@ type
     function GetRawContent: TBytes;
     procedure SetStatusCode(AValue: Integer);
     procedure SetStatusText(const AValue: string);
+    procedure SetContentStream(AStream: TStream; AOwnStream: Boolean);
   public
     constructor Create;
     destructor Destroy; override;
@@ -394,7 +396,8 @@ end;
 destructor TWiRLVirtualResponse.Destroy;
 begin
   FMediaType.Free;
-  FContentStream.Free;
+  if FOwnStream then
+    FContentStream.Free;
   inherited;
 end;
 
@@ -448,6 +451,20 @@ end;
 function TWiRLVirtualResponse.GetStatusText: string;
 begin
   Result := FStatusText;
+end;
+
+procedure TWiRLVirtualResponse.SetContentStream(AStream: TStream;
+  AOwnStream: Boolean);
+begin
+  if AStream <> FContentStream then
+  begin
+    if Assigned(FContentStream) and FOwnStream then
+    begin
+      FContentStream.Free;
+    end;
+    FContentStream := AStream;
+  end;
+  FOwnStream := AOwnStream;
 end;
 
 procedure TWiRLVirtualResponse.SetStatusCode(AValue: Integer);

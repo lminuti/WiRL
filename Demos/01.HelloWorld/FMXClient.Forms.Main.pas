@@ -21,7 +21,8 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, FMX.Grid, FireDAC.Stan.StorageJSON, Data.Bind.EngExt,
   Fmx.Bind.DBEngExt, Fmx.Bind.Grid, System.Bindings.Outputs, Fmx.Bind.Editors,
-  Data.Bind.Components, Data.Bind.Grid, Data.Bind.DBScope;
+  Data.Bind.Components, Data.Bind.Grid, Data.Bind.DBScope, FMX.Memo.Types,
+  FMX.Objects;
 
 type
   TMainForm = class(TForm)
@@ -47,12 +48,17 @@ type
     btnPost: TButton;
     BtnGenericGET: TButton;
     BtnGenericPOST: TButton;
+    BtnException: TButton;
+    Image1: TImage;
+    BtnGetImage: TButton;
     procedure btnExecuteClick(Sender: TObject);
     procedure btnEchoClick(Sender: TObject);
     procedure btnReverseClick(Sender: TObject);
     procedure btnPostClick(Sender: TObject);
     procedure BtnGenericGETClick(Sender: TObject);
     procedure BtnGenericPOSTClick(Sender: TObject);
+    procedure BtnExceptionClick(Sender: TObject);
+    procedure BtnGetImageClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -127,12 +133,29 @@ begin
   end;
 end;
 
+procedure TMainForm.BtnGetImageClick(Sender: TObject);
+var
+  LImageStream: TStream;
+begin
+  LImageStream := MainDataModule.GetImageStreamResource;
+  try
+    Image1.MultiResBitmap.Add.Bitmap.LoadFromStream(LImageStream);
+  finally
+    LImageStream.Free;
+  end;
+end;
+
 procedure TMainForm.btnPostClick(Sender: TObject);
 var
   LResponse: string;
 begin
   LResponse := MainDataModule.PostStreamResource.POST<string, string>('Hello, World!');
   ShowMessage(LResponse);
+end;
+
+procedure TMainForm.BtnExceptionClick(Sender: TObject);
+begin
+  Memo1.Lines.Add(MainDataModule.TestException);
 end;
 
 procedure TMainForm.btnExecuteClick(Sender: TObject);

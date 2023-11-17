@@ -1,5 +1,4 @@
 object MainDataModule: TMainDataModule
-  OldCreateOrder = False
   OnCreate = DataModuleCreate
   Height = 394
   Width = 604

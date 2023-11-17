@@ -211,9 +211,36 @@ object MainForm: TMainForm
         Size.Width = 97.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 4
+        TabOrder = 5
         Text = 'Generic POST'
         OnClick = BtnGenericPOSTClick
+      end
+      object BtnException: TButton
+        Position.X = 369.000000000000000000
+        Position.Y = 118.000000000000000000
+        Size.Width = 97.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        Text = 'Exception'
+        OnClick = BtnExceptionClick
+      end
+      object Image1: TImage
+        MultiResBitmap = <
+          item
+          end>
+        Position.X = 128.000000000000000000
+        Position.Y = 230.000000000000000000
+        Size.Width = 225.000000000000000000
+        Size.Height = 107.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object BtnGetImage: TButton
+        Position.X = 440.000000000000000000
+        Position.Y = 198.000000000000000000
+        TabOrder = 7
+        Text = 'Get Image'
+        OnClick = BtnGetImageClick
       end
     end
   end
