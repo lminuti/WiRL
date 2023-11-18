@@ -31,6 +31,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
+      TextSettings.Trimming = None
       IsSelected = False
       Size.Width = 122.000000000000000000
       Size.Height = 26.000000000000000000
@@ -61,6 +62,7 @@ object MainForm: TMainForm
           Align = Center
           TabOrder = 0
           Text = 'Execute'
+          TextSettings.Trimming = None
           OnClick = btnExecuteClick
         end
       end
@@ -69,6 +71,7 @@ object MainForm: TMainForm
       CustomIcon = <
         item
         end>
+      TextSettings.Trimming = None
       IsSelected = True
       Size.Width = 131.000000000000000000
       Size.Height = 26.000000000000000000
@@ -101,6 +104,7 @@ object MainForm: TMainForm
             Size.Height = 16.000000000000000000
             Size.PlatformDefault = False
             TextSettings.WordWrap = False
+            TextSettings.Trimming = None
             Text = 'Input:'
           end
         end
@@ -109,6 +113,7 @@ object MainForm: TMainForm
           Position.Y = 16.000000000000000000
           TabOrder = 2
           Text = 'Echo'
+          TextSettings.Trimming = None
           OnClick = btnEchoClick
         end
         object Edit2: TEdit
@@ -127,6 +132,7 @@ object MainForm: TMainForm
             Size.Height = 16.000000000000000000
             Size.PlatformDefault = False
             TextSettings.WordWrap = False
+            TextSettings.Trimming = None
             Text = 'Output:'
           end
         end
@@ -155,6 +161,7 @@ object MainForm: TMainForm
             Size.Height = 16.000000000000000000
             Size.PlatformDefault = False
             TextSettings.WordWrap = False
+            TextSettings.Trimming = None
             Text = 'Input:'
           end
         end
@@ -163,6 +170,7 @@ object MainForm: TMainForm
           Position.Y = 16.000000000000000000
           TabOrder = 2
           Text = 'Reverse'
+          TextSettings.Trimming = None
           OnClick = btnReverseClick
         end
         object Edit4: TEdit
@@ -181,6 +189,7 @@ object MainForm: TMainForm
             Size.Height = 16.000000000000000000
             Size.PlatformDefault = False
             TextSettings.WordWrap = False
+            TextSettings.Trimming = None
             Text = 'Output:'
           end
         end
@@ -193,6 +202,7 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 2
         Text = 'Post'
+        TextSettings.Trimming = None
         OnClick = btnPostClick
       end
       object BtnGenericGET: TButton
@@ -203,6 +213,7 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 3
         Text = 'Generic GET'
+        TextSettings.Trimming = None
         OnClick = BtnGenericGETClick
       end
       object BtnGenericPOST: TButton
@@ -211,8 +222,9 @@ object MainForm: TMainForm
         Size.Width = 97.000000000000000000
         Size.Height = 22.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 5
+        TabOrder = 6
         Text = 'Generic POST'
+        TextSettings.Trimming = None
         OnClick = BtnGenericPOSTClick
       end
       object BtnException: TButton
@@ -223,6 +235,7 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 4
         Text = 'Exception'
+        TextSettings.Trimming = None
         OnClick = BtnExceptionClick
       end
       object Image1: TImage
@@ -236,11 +249,48 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
       end
       object BtnGetImage: TButton
-        Position.X = 440.000000000000000000
-        Position.Y = 198.000000000000000000
-        TabOrder = 7
-        Text = 'Get Image'
+        Position.X = 488.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 10
+        Text = 'Get Image (new)'
+        TextSettings.Trimming = None
         OnClick = BtnGetImageClick
+      end
+      object Button1: TButton
+        Position.X = 264.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 202.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+        Text = 'Generic POST (With Object)'
+        TextSettings.Trimming = None
+        OnClick = Button1Click
+      end
+      object Button2: TButton
+        Position.X = 488.000000000000000000
+        Position.Y = 188.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 9
+        Text = 'Get Image (fill)'
+        TextSettings.Trimming = None
+        OnClick = Button2Click
+      end
+      object Button3: TButton
+        Position.X = 488.000000000000000000
+        Position.Y = 218.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 8
+        Text = 'Get Image (fill2)'
+        TextSettings.Trimming = None
+        OnClick = Button3Click
       end
     end
   end

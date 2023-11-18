@@ -46,8 +46,11 @@ type
     function ReverseString(AString: string): string;
     function GetPerson(Id: Integer): TPerson;
     function PostOrder(AOrderProposal: TOrderProposal): TOrder;
+    procedure FillOrder(AOrderProposal: TOrderProposal; AOrder: TOrder);
     function TestException(): string;
     function GetImageStreamResource: TStream;
+    procedure FillImageStreamResource(AStream: TStream);
+    procedure FillImageStreamResource2(AStream: TStream);
   end;
 
 var
@@ -101,12 +104,39 @@ begin
   Result := HelloWorldResource.GET<string>;
 end;
 
+procedure TMainDataModule.FillImageStreamResource(AStream: TStream);
+begin
+  WiRLClientApplication1
+    .Resource('entity/image')
+    .Accept('image/png')
+    .Get(AStream);
+end;
+
+procedure TMainDataModule.FillImageStreamResource2(AStream: TStream);
+begin
+  WiRLClientApplication1
+    .Resource('entity/image')
+    .Accept('image/png')
+    .SetContentStream(AStream)
+    .Get<RawByteString>;
+end;
+
+procedure TMainDataModule.FillOrder(AOrderProposal: TOrderProposal;
+  AOrder: TOrder);
+begin
+  WiRLClientApplication1
+    .Resource('helloworld/order')
+    .Accept('application/json')
+    .ContentType('application/json')
+    .Header('x-author', 'Luca')
+    .Post<TOrderProposal>(AOrderProposal, AOrder);
+end;
+
 function TMainDataModule.GetImageStreamResource: TStream;
 begin
   Result := WiRLClientApplication1
     .Resource('entity/image')
     .Accept('image/png')
-    //.SetContentStream(TMemoryStream.Create, False)
     .Get<TStream>;
 end;
 

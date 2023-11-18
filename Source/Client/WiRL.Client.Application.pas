@@ -41,7 +41,7 @@ type
     function Authorization(const AValue: string): TWiRLInvocation; overload;
     function AuthBasic(const AName, AValue: string): TWiRLInvocation; overload;
     function AuthBearer(const AValue: string): TWiRLInvocation; overload;
-    function SetContentStream(AStream: TStream; AOwnStream: Boolean): TWiRLInvocation;
+    function SetContentStream(AStream: TStream; AOwnStream: Boolean = False): TWiRLInvocation;
 
     function QueryParam(const AName: string; const AValue: TValue): TWiRLInvocation; overload;
     function QueryParam<T>(const AName: string; const AValue: T): TWiRLInvocation; overload;

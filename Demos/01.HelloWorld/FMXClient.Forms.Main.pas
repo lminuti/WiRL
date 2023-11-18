@@ -51,6 +51,9 @@ type
     BtnException: TButton;
     Image1: TImage;
     BtnGetImage: TButton;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
     procedure btnExecuteClick(Sender: TObject);
     procedure btnEchoClick(Sender: TObject);
     procedure btnReverseClick(Sender: TObject);
@@ -59,6 +62,9 @@ type
     procedure BtnGenericPOSTClick(Sender: TObject);
     procedure BtnExceptionClick(Sender: TObject);
     procedure BtnGetImageClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -87,6 +93,66 @@ end;
 procedure TMainForm.btnReverseClick(Sender: TObject);
 begin
   Edit4.Text := MainDataModule.ReverseString(Edit3.Text);
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+var
+  LOrderProposal: TOrderProposal;
+  LOrder: TOrder;
+begin
+  LOrderProposal := TOrderProposal.Create;
+  try
+    LOrderProposal.Article := 'WiRL';
+    LOrderProposal.Description := 'Delphi RESTful Library';
+    LOrderProposal.DueDate := Now;
+    LOrderProposal.Quantity := 42;
+
+    LOrder := TOrder.Create;
+    try
+      MainDataModule.FillOrder(LOrderProposal, LOrder);
+      ShowMessage(
+        'Id: ' + LOrder.ID.ToString + sLineBreak +
+        'Article: ' + LOrder.Article + sLineBreak +
+        'Description: ' + LOrder.Description + sLineBreak +
+        'DueDate: ' + DateTimeToStr(LOrder.DueDate)
+      );
+    finally
+      LOrder.Free;
+    end;
+  finally
+    LOrderProposal.Free;
+  end;
+
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+var
+  LImageStream: TStream;
+begin
+  LImageStream := TMemoryStream.Create;
+  try
+    MainDataModule.FillImageStreamResource(LImageStream);
+    LImageStream.Position := 0;
+    Image1.MultiResBitmap.Add.Bitmap.LoadFromStream(LImageStream);
+  finally
+    LImageStream.Free;
+  end;
+
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+var
+  LImageStream: TStream;
+begin
+  LImageStream := TMemoryStream.Create;
+  try
+    MainDataModule.FillImageStreamResource2(LImageStream);
+    LImageStream.Position := 0;
+    Image1.MultiResBitmap.Add.Bitmap.LoadFromStream(LImageStream);
+  finally
+    LImageStream.Free;
+  end;
+
 end;
 
 procedure TMainForm.BtnGenericGETClick(Sender: TObject);
@@ -155,7 +221,7 @@ end;
 
 procedure TMainForm.BtnExceptionClick(Sender: TObject);
 begin
-  Memo1.Lines.Add(MainDataModule.TestException);
+  ShowMessage(MainDataModule.TestException);
 end;
 
 procedure TMainForm.btnExecuteClick(Sender: TObject);

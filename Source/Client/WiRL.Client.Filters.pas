@@ -147,6 +147,7 @@ type
     procedure SetStatusCode(AValue: Integer);
     procedure SetStatusText(const AValue: string);
     procedure SetContentStream(AStream: TStream; AOwnStream: Boolean);
+    procedure SetOwnContentStream(const AValue: Boolean);
   public
     constructor Create;
     destructor Destroy; override;
@@ -465,6 +466,11 @@ begin
     FContentStream := AStream;
   end;
   FOwnStream := AOwnStream;
+end;
+
+procedure TWiRLVirtualResponse.SetOwnContentStream(const AValue: Boolean);
+begin
+  FOwnStream := AValue;
 end;
 
 procedure TWiRLVirtualResponse.SetStatusCode(AValue: Integer);
