@@ -41,6 +41,11 @@
 
 {$IF CompilerVersion >= 35} // Delphi 11.0 Alexandria
   {$DEFINE HAS_NEW_ANDROID_PID}
+  {$UNDEF CUSTOM_ATTRIBUTE_BUG}
+{$ENDIF}
+
+{$IF CompilerVersion >= 36} // Delphi 12.0 Athens
+
 {$ENDIF}
 
 {$IF CompilerVersion >= 36} // Delphi 12.0 Athens
