@@ -22,7 +22,7 @@ uses
   FireDAC.Comp.Client, FMX.Grid, FireDAC.Stan.StorageJSON, Data.Bind.EngExt,
   Fmx.Bind.DBEngExt, Fmx.Bind.Grid, System.Bindings.Outputs, Fmx.Bind.Editors,
   Data.Bind.Components, Data.Bind.Grid, Data.Bind.DBScope, FMX.Memo.Types,
-  FMX.Objects;
+  FMX.Objects, FMX.DialogService;
 
 type
   TMainForm = class(TForm)
@@ -33,27 +33,19 @@ type
     btnExecute: TButton;
     Memo1: TMemo;
     Layout1: TLayout;
-    Layout2: TLayout;
-    Edit1: TEdit;
-    Label1: TLabel;
     btnEcho: TButton;
-    Edit2: TEdit;
-    Label2: TLabel;
-    Layout3: TLayout;
-    Edit3: TEdit;
-    Label3: TLabel;
+    Image1: TImage;
     btnReverse: TButton;
-    Edit4: TEdit;
-    Label4: TLabel;
     btnPost: TButton;
     BtnGenericGET: TButton;
     BtnGenericPOST: TButton;
     BtnException: TButton;
-    Image1: TImage;
-    BtnGetImage: TButton;
     Button1: TButton;
+    BtnGetImage: TButton;
     Button2: TButton;
     Button3: TButton;
+    BtnPostStream: TButton;
+    BtnGetRawResponse: TButton;
     procedure btnExecuteClick(Sender: TObject);
     procedure btnEchoClick(Sender: TObject);
     procedure btnReverseClick(Sender: TObject);
@@ -65,8 +57,11 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Image1DblClick(Sender: TObject);
+    procedure BtnPostStreamClick(Sender: TObject);
+    procedure BtnGetRawResponseClick(Sender: TObject);
   private
-    { Private declarations }
+    procedure Log(const ATag, AMessage: string);
   public
     { Public declarations }
   end;
@@ -87,12 +82,18 @@ uses
 
 procedure TMainForm.btnEchoClick(Sender: TObject);
 begin
-  Edit2.Text := MainDataModule.EchoString(Edit1.Text);
+  Log(
+    'Echo',
+    MainDataModule.EchoString(InputBox(Application.Title, 'Text', 'Hello, World!'))
+  );
 end;
 
 procedure TMainForm.btnReverseClick(Sender: TObject);
 begin
-  Edit4.Text := MainDataModule.ReverseString(Edit3.Text);
+  Log(
+    'Reverse',
+    MainDataModule.ReverseString(InputBox(Application.Title, 'Text', 'Hello, World!'))
+  );
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
@@ -110,7 +111,8 @@ begin
     LOrder := TOrder.Create;
     try
       MainDataModule.FillOrder(LOrderProposal, LOrder);
-      ShowMessage(
+      Log(
+        'FillOrder',
         'Id: ' + LOrder.ID.ToString + sLineBreak +
         'Article: ' + LOrder.Article + sLineBreak +
         'Description: ' + LOrder.Description + sLineBreak +
@@ -134,6 +136,10 @@ begin
     MainDataModule.FillImageStreamResource(LImageStream);
     LImageStream.Position := 0;
     Image1.MultiResBitmap.Add.Bitmap.LoadFromStream(LImageStream);
+    Log(
+      'FillImageStreamResource',
+      'Size: ' + LImageStream.Size.ToString
+    );
   finally
     LImageStream.Free;
   end;
@@ -149,10 +155,25 @@ begin
     MainDataModule.FillImageStreamResource2(LImageStream);
     LImageStream.Position := 0;
     Image1.MultiResBitmap.Add.Bitmap.LoadFromStream(LImageStream);
+    Log(
+      'FillImageStreamResource2',
+      'Size: ' + LImageStream.Size.ToString
+    );
   finally
     LImageStream.Free;
   end;
 
+end;
+
+procedure TMainForm.Image1DblClick(Sender: TObject);
+begin
+  Image1.MultiResBitmap.Clear;
+end;
+
+procedure TMainForm.Log(const ATag, AMessage: string);
+begin
+  Memo1.Lines.Add('---------- ' + DateTimeToStr(Now) + ' ' + ATag + ' ----------');
+  Memo1.Lines.Add(AMessage);
 end;
 
 procedure TMainForm.BtnGenericGETClick(Sender: TObject);
@@ -161,7 +182,8 @@ var
 begin
   LPerson := MainDataModule.GetPerson(12);
   try
-    ShowMessage(
+    Log(
+      'GetPerson',
       'Name: ' + LPerson.Name + sLineBreak +
       'Age: ' + LPerson.Age.ToString + sLineBreak +
       'Detail: ' + LPerson.Detail
@@ -185,7 +207,8 @@ begin
 
     LOrder := MainDataModule.PostOrder(LOrderProposal);
     try
-      ShowMessage(
+      Log(
+        'PortOrder',
         'Id: ' + LOrder.ID.ToString + sLineBreak +
         'Article: ' + LOrder.Article + sLineBreak +
         'Description: ' + LOrder.Description + sLineBreak +
@@ -206,9 +229,22 @@ begin
   LImageStream := MainDataModule.GetImageStreamResource;
   try
     Image1.MultiResBitmap.Add.Bitmap.LoadFromStream(LImageStream);
+    Log(
+      'GetImageStreamResource',
+      'Size: ' + LImageStream.Size.ToString
+    );
   finally
     LImageStream.Free;
   end;
+end;
+
+procedure TMainForm.BtnGetRawResponseClick(Sender: TObject);
+begin
+  Log(
+    'GetRawResponse',
+    MainDataModule.GetRawResponse
+  );
+
 end;
 
 procedure TMainForm.btnPostClick(Sender: TObject);
@@ -216,17 +252,41 @@ var
   LResponse: string;
 begin
   LResponse := MainDataModule.PostStreamResource.POST<string, string>('Hello, World!');
-  ShowMessage(LResponse);
+  Log(
+    'POST',
+    LResponse
+  );
+end;
+
+procedure TMainForm.BtnPostStreamClick(Sender: TObject);
+var
+  LStream: TStream;
+begin
+  LStream := TStringStream.Create('Hello, World!', TEncoding.UTF8);
+  try
+    Log(
+      'PostStream',
+      MainDataModule.PostStream(LStream)
+    );
+  finally
+    LStream.Free;
+  end;
 end;
 
 procedure TMainForm.BtnExceptionClick(Sender: TObject);
 begin
-  ShowMessage(MainDataModule.TestException);
+  Log(
+    'TestException',
+    MainDataModule.TestException
+  );
 end;
 
 procedure TMainForm.btnExecuteClick(Sender: TObject);
 begin
-  Memo1.Lines.Add(MainDataModule.ExecuteHelloWorld);
+  Log(
+    'ExecuteHelloWorld',
+    MainDataModule.ExecuteHelloWorld
+  );
 end;
 
 end.

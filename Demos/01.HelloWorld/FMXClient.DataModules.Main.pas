@@ -51,6 +51,8 @@ type
     function GetImageStreamResource: TStream;
     procedure FillImageStreamResource(AStream: TStream);
     procedure FillImageStreamResource2(AStream: TStream);
+    function PostStream(AStream: TStream): string;
+    function GetRawResponse: string;
   end;
 
 var
@@ -151,6 +153,18 @@ begin
     .Get<TPerson>;
 end;
 
+function TMainDataModule.GetRawResponse: string;
+var
+  LResponse: IWiRLResponse;
+begin
+  ReverseStringResource.PathParam('AString', 'Hello, World!');
+  LResponse := ReverseStringResource.GET<IWiRLResponse>;
+  Result :=
+    'StatusCode: ' + LResponse.StatusCode.ToString + sLineBreak +
+    'ReasonString: ' + LResponse.StatusText + sLineBreak +
+    'Content: ' + LResponse.Content;
+end;
+
 function TMainDataModule.PostOrder(AOrderProposal: TOrderProposal): TOrder;
 begin
   Result := WiRLClientApplication1
@@ -159,6 +173,11 @@ begin
     .ContentType('application/json')
     .Header('x-author', 'Luca')
     .Post<TOrderProposal, TOrder>(AOrderProposal);
+end;
+
+function TMainDataModule.PostStream(AStream: TStream): string;
+begin
+  Result := PostStreamResource.Post<TStream, string>(AStream);
 end;
 
 function TMainDataModule.ReverseString(AString: string): string;

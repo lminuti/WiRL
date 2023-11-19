@@ -75,21 +75,6 @@ type
     class operator Implicit(AAuth: string): TBearerAuth;
   end;
 
-  THttpStream = class(TStream)
-  private
-    FStream: TStream;
-    FOwnStream: Boolean;
-  public
-    function Read(var Buffer; Count: Longint): Longint; override;
-    function Write(const Buffer; Count: Longint): Longint; override;
-    function Seek(Offset: Longint; Origin: Word): Longint; overload; override;
-    function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; overload; override;
-
-    constructor Create(AStream: TStream; AOwnStream: Boolean);
-    destructor Destroy; override;
-  end;
-
-
 implementation
 
 uses
@@ -194,42 +179,6 @@ begin
     raise EWiRLException.Create('Authentication header error: wrong authentication type');
 
   Result.FToken := AAuth.Substring(AUTH_BEARER.Length);
-end;
-
-{ THttpStream }
-
-constructor THttpStream.Create(AStream: TStream; AOwnStream: Boolean);
-begin
-  inherited Create;
-  FStream := AStream;
-  FOwnStream := AOwnStream;
-end;
-
-destructor THttpStream.Destroy;
-begin
-  if FOwnStream then
-    FStream.Free;
-  inherited;
-end;
-
-function THttpStream.Read(var Buffer; Count: Longint): Longint;
-begin
-  Result := FStream.Read(Buffer, Count);
-end;
-
-function THttpStream.Seek(Offset: Longint; Origin: Word): Longint;
-begin
-  Result := FStream.Seek(Offset, Origin);
-end;
-
-function THttpStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
-begin
-  Result := FStream.Seek(Offset, Origin);
-end;
-
-function THttpStream.Write(const Buffer; Count: Longint): Longint;
-begin
-  Result := FStream.Write(Buffer, Count);
 end;
 
 end.
