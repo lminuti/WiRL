@@ -150,11 +150,6 @@ type
     constructor Create(ACustomResource: TWiRLClientCustomResource);
   end;
 
-function IsStream(AType: TRttiType): Boolean; overload;
-function IsStream(ATypeInfo: Pointer): Boolean; overload;
-
-function IsResponse(ATypeInfo: Pointer): Boolean;
-
 implementation
 
 uses
@@ -215,31 +210,6 @@ begin
       Result := AResource.Client.Patch(AResource.URL, ARequestStream, AResponseStream, ACustomHeaders);
     end;
 
-end;
-
-function IsStream(AType: TRttiType): Boolean; overload;
-begin
-  Result := False;
-  if (AType is TRttiInstanceType) and (TRttiInstanceType(AType).MetaclassType.InheritsFrom(TStream)) then
-    Result := True;
-end;
-
-function IsStream(ATypeInfo: Pointer): Boolean; overload;
-var
-  LType: TRttiType;
-begin
-  LType := TRttiHelper.Context.GetType(ATypeInfo);
-  Result := IsStream(LType);
-end;
-
-function IsResponse(ATypeInfo: Pointer): Boolean;
-var
-  LType: TRttiType;
-begin
-  Result := False;
-  LType := TRttiHelper.Context.GetType(ATypeInfo);
-  if (LType is TRttiInterfaceType) and (TRttiInterfaceType(LType).GUID = IWiRLResponse) then
-    Exit(True);
 end;
 
 { TWiRLClientCustomResource }
@@ -507,9 +477,8 @@ var
   LValue: TValue;
 begin
   LType := TRttiHelper.Context.GetType(TypeInfo(T));
-  //if (LType is TRttiInstanceType) and (TRttiInstanceType(LType).MetaclassType.InheritsFrom(TStream)) then
-  if IsStream(LType) then
-    Exit(TValue.From<TStream>(AStream).AsType<T>);
+  if TRttiHelper.IsObjectOfType<TStream>(LType) then
+    Exit(TRttiHelper.ObjectAsType<T>(AStream));
 
   LMediaType := TMediaType.Create(AHeaders.ContentType);
   try
@@ -607,7 +576,7 @@ begin
     end;
     DoAfterRequest(AHttpMethod, LRequestStream, LResponse);
 
-    if IsResponse(TypeInfo(V)) then
+    if TRttiHelper.IsInterfaceOfType(TypeInfo(V), IWiRLResponse) then
       Exit(TValue.From<IWiRLResponse>(LResponse).AsType<V>);
 
     Result := StreamToObject<V>(LResponse.Headers, LResponse.ContentStream);
